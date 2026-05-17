@@ -3,7 +3,7 @@ package com.memos.memosapp.controller;
 import com.memos.memosapp.common.Result;
 import com.memos.memosapp.entity.Article;
 import com.memos.memosapp.service.ArticleService;
-import com.memos.memosapp.utils.JwtUtil;
+import com.memos.memosapp.utils.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -15,26 +15,58 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-    // 发布文章（需要登录，从 Token 里拿用户ID）
     @PostMapping
-    public Result<?> publish(@RequestBody Article article,
-                                  @RequestHeader("Authorization") String token) {
-        // 从请求头里拿 Token，解析出用户ID
-        if (!JwtUtil.validate(token)) {
-            return Result.error("请先登录");
-        }
-        Long userId = JwtUtil.getUserId(token);
+    public Result<?> publish(@RequestBody Article article) {
+        // 直接从 UserContext 取用户ID，不用再解析 Token
+        Long userId = UserContext.getUserId();
         articleService.publish(article, userId);
         return Result.success("发布成功");
     }
 
-    // 查询文章列表（不需要登录）
     @GetMapping("/list")
     public Result<List<Article>> list(@RequestParam(required = false) Long categoryId) {
         List<Article> articles = articleService.list(categoryId);
         return Result.success(articles);
     }
 }
+
+//package com.memos.memosapp.controller;
+//
+//import com.memos.memosapp.common.Result;
+//import com.memos.memosapp.entity.Article;
+//import com.memos.memosapp.service.ArticleService;
+//import com.memos.memosapp.utils.JwtUtil;
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.web.bind.annotation.*;
+//import java.util.List;
+//
+//@RestController
+//@RequestMapping("/article")
+//@RequiredArgsConstructor
+//public class ArticleController {
+//
+//    private final ArticleService articleService;
+//
+//    // 发布文章（需要登录，从 Token 里拿用户ID）
+//    @PostMapping
+//    public Result<?> publish(@RequestBody Article article,
+//                                  @RequestHeader("Authorization") String token) {
+//        // 从请求头里拿 Token，解析出用户ID
+//        if (!JwtUtil.validate(token)) {
+//            return Result.error("请先登录");
+//        }
+//        Long userId = JwtUtil.getUserId(token);
+//        articleService.publish(article, userId);
+//        return Result.success("发布成功");
+//    }
+//
+//    // 查询文章列表（不需要登录）
+//    @GetMapping("/list")
+//    public Result<List<Article>> list(@RequestParam(required = false) Long categoryId) {
+//        List<Article> articles = articleService.list(categoryId);
+//        return Result.success(articles);
+//    }
+//}
 
 //package com.memos.memosapp.controller;
 //
