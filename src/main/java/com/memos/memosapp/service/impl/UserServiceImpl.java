@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.memos.memosapp.entity.User;
 import com.memos.memosapp.mapper.UserMapper;
 import com.memos.memosapp.service.UserService;
+import com.memos.memosapp.utils.JwtUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +51,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         // 今天先返回简单字符串，明天换成真正的 JWT Token
-        return "登录成功，用户ID：" + user.getId();
+        //把这行
+        // return "登录成功，用户ID：" + user.getId();
+
+        // 换成这行
+        return JwtUtil.generateToken(user.getId(), user.getUsername());
     }
 }
